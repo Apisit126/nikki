@@ -85,6 +85,13 @@
             header h1 { font-size: 2.2rem; }
         }
 
+        /* Left Column Layout */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
         /* Pro Wheel Container */
         .wheel-card {
             background: var(--card-glass);
@@ -106,15 +113,6 @@
             background: linear-gradient(145deg, #1e293b, #0f172a);
             box-shadow: 0 0 30px rgba(168, 85, 247, 0.3), inset 0 0 15px rgba(0,0,0,0.8);
             border: 3px solid rgba(251, 191, 36, 0.4);
-        }
-
-        /* Lights decoration around wheel */
-        .wheel-lights {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            border-radius: 50%;
-            pointer-events: none;
-            box-sizing: border-box;
         }
 
         .wheel-container {
@@ -146,7 +144,6 @@
             border-left: 20px solid transparent;
             border-right: 20px solid transparent;
             border-top: 38px solid #f59e0b;
-            transition: transform 0.1s ease;
         }
 
         canvas {
@@ -191,6 +188,95 @@
             box-shadow: none;
             cursor: not-allowed;
             transform: none;
+        }
+
+        /* History Card */
+        .history-card {
+            background: var(--card-glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            padding: 1.5rem;
+            border-radius: 28px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .history-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-clear-history {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--neon-pink);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-clear-history:hover {
+            background: var(--neon-pink);
+            color: white;
+        }
+
+        .history-list {
+            list-style: none;
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .history-item .food-name {
+            font-weight: 600;
+            color: #fbbf24;
+        }
+
+        .history-item .time-stamp {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .empty-history {
+            text-align: center;
+            color: #64748b;
+            padding: 1rem 0;
+            font-size: 0.9rem;
         }
 
         /* Menu Panel UI */
@@ -263,7 +349,7 @@
 
         .menu-list {
             list-style: none;
-            max-height: 300px;
+            max-height: 380px;
             overflow-y: auto;
             padding-right: 6px;
         }
@@ -405,25 +491,38 @@
     </header>
 
     <div class="main-container">
-        <!-- Wheel Card -->
-        <div class="wheel-card">
-            <div class="wheel-outer-ring">
-                <div class="pointer-box">
-                    <div class="pointer-arrow" id="pointerArrow"></div>
+        <!-- Left Column: Wheel & History -->
+        <div class="left-column">
+            <div class="wheel-card">
+                <div class="wheel-outer-ring">
+                    <div class="pointer-box">
+                        <div class="pointer-arrow" id="pointerArrow"></div>
+                    </div>
+                    <div class="wheel-container">
+                        <canvas id="wheelCanvas" width="600" height="600"></canvas>
+                    </div>
                 </div>
-                <div class="wheel-container">
-                    <canvas id="wheelCanvas" width="600" height="600"></canvas>
+
+                <div class="btn-spin-container">
+                    <button class="btn-spin" id="spinBtn" onclick="spinWheel()">
+                        <i class="fa-solid fa-play"></i> หมุนวงล้อ!
+                    </button>
                 </div>
             </div>
 
-            <div class="btn-spin-container">
-                <button class="btn-spin" id="spinBtn" onclick="spinWheel()">
-                    <i class="fa-solid fa-play"></i> หมุนวงล้อ!
-                </button>
+            <!-- Spin History Card -->
+            <div class="history-card">
+                <div class="history-header">
+                    <h3><i class="fa-solid fa-clock-rotate-left" style="color: #fbbf24;"></i> ประวัติการสุ่มเมนู</h3>
+                    <button class="btn-clear-history" onclick="clearHistory()">ล้างประวัติ</button>
+                </div>
+                <ul class="history-list" id="historyList">
+                    <div class="empty-history">ยังไม่มีประวัติการสุ่ม</div>
+                </ul>
             </div>
         </div>
 
-        <!-- Menu Panel -->
+        <!-- Right Column: Menu Panel -->
         <div class="menu-card">
             <h3>
                 <span><i class="fa-solid fa-sliders"></i> รายการอาหาร</span>
@@ -453,8 +552,8 @@
 
     <script>
         let items = ["กระเพราไข่ดาว", "ชาบู / หมูกระทะ", "ก๋วยเตี๋ยว", "ส้มตำ ไก่ย่าง", "ข้าวมันไก่", "ข้าวไข่เจียว", "สเต๊กเนื้อ", "อาหารญี่ปุ่น"];
+        let history = [];
 
-        // จานสีพรีเมียม Vibrant Neon
         const colors = [
             "#f43f5e", "#8b5cf6", "#06b6d4", "#10b981", 
             "#f59e0b", "#ec4899", "#3b82f6", "#84cc16"
@@ -465,7 +564,6 @@
         let currentRotation = 0;
         let isSpinning = false;
 
-        // เสียงเอฟเฟกต์หมุนสไตล์ตู้เกม
         function playTickSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -482,7 +580,6 @@
             } catch(e) {}
         }
 
-        // วาดวงล้อ Pro HD
         function drawWheel() {
             const numItems = items.length;
             const arcSize = (2 * Math.PI) / numItems;
@@ -501,19 +598,16 @@
             for (let i = 0; i < numItems; i++) {
                 const angle = i * arcSize;
                 
-                // วาดชิ้นวงล้อ
                 ctx.fillStyle = colors[i % colors.length];
                 ctx.beginPath();
                 ctx.moveTo(radius, radius);
                 ctx.arc(radius, radius, radius - 8, angle, angle + arcSize);
                 ctx.fill();
 
-                // เส้นขอบสีทองบางๆ
                 ctx.lineWidth = 2;
                 ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
                 ctx.stroke();
 
-                // วาดตัวหนังสือ
                 ctx.save();
                 ctx.translate(radius, radius);
                 ctx.rotate(angle + arcSize / 2);
@@ -526,7 +620,6 @@
                 ctx.restore();
             }
 
-            // วาดปุ่มดุมกลางวงล้อ (Center Hub)
             ctx.beginPath();
             ctx.arc(radius, radius, 45, 0, 2 * Math.PI);
             const grad = ctx.createLinearGradient(radius - 40, radius - 40, radius + 40, radius + 40);
@@ -588,10 +681,8 @@
             const totalRotation = currentRotation + (360 * 6) + extraDegrees;
             currentRotation = totalRotation;
 
-            // เอฟเฟกต์เสียงหมุนถี่ขนานกับการหมุน
             let soundInterval = setInterval(playTickSound, 120);
 
-            // หมุนวงล้อ
             canvas.style.transform = `rotate(${totalRotation}deg)`;
 
             setTimeout(() => {
@@ -603,15 +694,44 @@
                 const arcSizeDegrees = 360 / items.length;
                 const winningIndex = Math.floor((360 - (actualDegree % 360) + 270) % 360 / arcSizeDegrees);
 
-                showResult(items[winningIndex]);
+                const resultFood = items[winningIndex];
+                addHistory(resultFood);
+                showResult(resultFood);
             }, 4500);
+        }
+
+        // ระบบจัดการประวัติการสุ่ม
+        function addHistory(foodName) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+            history.unshift({ name: foodName, time: timeStr });
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const listEl = document.getElementById('historyList');
+            if (history.length === 0) {
+                listEl.innerHTML = '<div class="empty-history">ยังไม่มีประวัติการสุ่ม</div>';
+                return;
+            }
+
+            listEl.innerHTML = history.map(item => `
+                <li class="history-item">
+                    <span class="food-name">🍚 ${item.name}</span>
+                    <span class="time-stamp"><i class="fa-regular fa-clock"></i> ${item.time} น.</span>
+                </li>
+            `).join('');
+        }
+
+        function clearHistory() {
+            history = [];
+            renderHistory();
         }
 
         function showResult(result) {
             document.getElementById('resultText').innerText = result;
             document.getElementById('resultModal').classList.add('active');
 
-            // เอฟเฟกต์ Confetti ฉลองชนะ
             confetti({
                 particleCount: 120,
                 spread: 80,
